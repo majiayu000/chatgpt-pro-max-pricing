@@ -159,7 +159,7 @@ function renderCompare(){
   return `<article class="compare-card"><div class="compare-card-head"><img src="assets/flags/${r.code.toLowerCase()}.svg" width="25" height="19" alt="" aria-hidden="true"><div><strong>${esc(r.name)}</strong><br><small>${esc(r.code)} · ${esc(r.currency)}</small></div><button type="button" class="compare-remove" data-remove="${r.code}" aria-label="移除${esc(r.name)}">×</button></div><div class="compare-value">${price.cny===null?'待核实':'¥'+money(price.cny)}</div><div class="compare-label">人民币 / ${esc(price.label)} / 月</div><div class="compare-diff">${diff}</div><dl><div><dt>接口原价</dt><dd>${money(r.original,r.precision)} ${esc(r.currency)} · ${r.originalTax==='inclusive'?'含税':'未含税'}</dd></div><div><dt>税前金额</dt><dd>${r.net===null?'待核实':money(r.net,r.precision)+' '+esc(r.currency)}</dd></div></dl></article>`;
  }).join('');
 }
-function render(){
+function render(syncURL=true){
  updatePriceScope();filtered=getFiltered();const pages=Math.max(1,Math.ceil(filtered.length/state.size));state.page=Math.min(state.page,pages);
  const offset=(state.page-1)*state.size,items=filtered.slice(offset,offset+state.size);
  $('rows').innerHTML=items.map((r,i)=>{const p=displayedPrice(r),methodClass=state.tax==='net'?(r.method==='calculated'?'calc':r.method==='missing'?'missing':''):(r.originalTax==='exclusive'?'calc':'');return `<tr${r.code==='US'?' class="country-us"':''}><td class="rank rank-col">${String(offset+i+1).padStart(2,'0')}</td><td><div class="country"><span class="country-marker"><img class="country-flag" src="assets/flags/${r.code.toLowerCase()}.svg" width="24" height="18" alt="" aria-hidden="true"><span class="country-code">${esc(r.code)}</span></span><div><div class="country-name">${esc(r.name)}</div>${r.code==='US'?'<div class="country-sub">美国基准 · 未含税</div>':''}</div><button type="button" class="compare-toggle" data-compare="${r.code}" aria-label="${state.compare.includes(r.code)?'移除':'加入'}${esc(r.name)}对比" aria-pressed="${state.compare.includes(r.code)}" title="${state.compare.includes(r.code)?'移除对比':'加入对比'}" ${state.compare.length===4&&!state.compare.includes(r.code)?'disabled':''}>${state.compare.includes(r.code)?'✓':'+'}</button></div></td><td class="num local-col"><span class="local-value">${p.local===null?'—':money(p.local,r.precision)}<small>${esc(r.currency)}</small></span></td><td class="num">${p.cny===null?'<span class="missing-price">暂无税前价</span>':`<span class="cny"><small>¥</small>${money(p.cny)}</span>${state.tax==='original'?`<span class="row-tax">${r.originalTax==='inclusive'?'含税原价':'未含税原价'}</span>`:''}`}</td><td class="num delta-col">${deltaHTML(r)}</td><td class="method-col"><span class="method ${methodClass}">${p.method}</span></td><td><button class="more" data-code="${r.code}" aria-label="查看${esc(r.name)}价格详情" title="价格与来源">↗</button></td></tr>`;}).join('');
@@ -168,7 +168,7 @@ function render(){
  $('page-number').textContent=`${state.page} / ${pages}`;$('prev').disabled=state.page<=1;$('next').disabled=state.page>=pages;
  $('reset').hidden=!($('search').value||$('currency').value||$('method').value||state.view!=='all'||$('sort').value!=='asc');
  document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b.dataset.view===state.view);b.setAttribute('aria-pressed',String(b.dataset.view===state.view));});
- renderCompare();syncViewURL();
+ renderCompare();if(syncURL)syncViewURL();
 }
 function reset(){state.view='all';state.page=1;for(const id of ['search','currency','method'])$(id).value='';$('sort').value='asc';render();}
 for(const id of ['search','currency','method','sort'])$(id).addEventListener(id==='search'?'input':'change',()=>{state.page=1;render();});
@@ -204,7 +204,7 @@ $('export').addEventListener('click',()=>{
 });
 const navItems=[...document.querySelectorAll('.nav a')];function activateNav(href){navItems.forEach(a=>a.classList.toggle('active',a.getAttribute('href')===href));}document.querySelectorAll('a[href="#prices"],a[href="#storage"],a[href="#methodology"]').forEach(a=>a.addEventListener('click',()=>activateNav(a.getAttribute('href'))));
 document.addEventListener('keydown',e=>{if(dialog.open||e.altKey||e.ctrlKey||e.metaKey||e.target.closest('input,select,textarea,[contenteditable]'))return;if(['1','2','3'].includes(e.key)){e.preventDefault();const section={'1':'prices','2':'storage','3':'methodology'}[e.key];activateNav('#'+section);document.getElementById(section).scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}});
-readViewFromURL();render();
+readViewFromURL();render(!document.getElementById(location.hash.slice(1)));
 
 </script>
 </body>
