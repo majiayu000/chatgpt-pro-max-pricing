@@ -25,6 +25,12 @@ https://chatgpt.com/backend-anon/checkout_pricing_config/configs/US
 
 这是静态快照，不自动刷新。每行详情保留对应的官方配置来源。
 
+## 查看、比较与分享
+
+在[价格表](https://majiayu000.github.io/chatgpt-pro-max-pricing/#prices)搜索地区名称或代码，切换原价/不含税，再打开详情核对来源。最多选择四个地区对比；分享链接保留当前筛选和口径，CSV 导出当前结果。页面中的[使用说明与常见问题](https://majiayu000.github.io/chatgpt-pro-max-pricing/#pricing-help)解释参考换算、购买可用性与网页/App 差异。
+
+当前权益和购买价格请查 [ChatGPT 官方套餐页](https://chatgpt.com/pricing/)及 [OpenAI 多币种账单说明](https://help.openai.com/en/articles/10421635-multi-currency-billing-faq)。数据问题请在[本项目 Issues](https://github.com/majiayu000/chatgpt-pro-max-pricing/issues)提供国家代码与公开来源。
+
 ## 本地预览
 
 直接打开 `index.html`，或运行：
@@ -33,7 +39,7 @@ https://chatgpt.com/backend-anon/checkout_pricing_config/configs/US
 python3 -m http.server 8877
 ```
 
-页面数据、样式和交互脚本已内嵌。Geist、Geist Mono 和 Noto Sans SC 字体通过 Google Fonts 加载，不可用时使用本地字体。
+页面数据、样式和交互脚本已内嵌。Geist、Geist Mono 和 Noto Sans SC 字体通过 Google Fonts 非阻塞加载；加载较慢或不可用时使用现有本地字体回退。
 
 ## 发布
 
